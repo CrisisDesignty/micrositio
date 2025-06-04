@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Calendario de eventos</title>
+
+  <!-- Tailwind vía CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- CSS propio -->
+  <link rel="stylesheet" href="app.css">
+
+  <!-- Lógica -->
+  <script src="app.js" defer></script>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-4 bg-[var(--bg)]">
+  <!-- Indicador admin -->
+  <div id="admin-indicator" class="admin-mode-indicator">
+    <span>Modo Administrador</span>
+    <button id="exit-admin-btn" class="btn-alt text-xs">Salir</button>
+  </div>
+  <div id="admin-trigger" class="admin-trigger" title="Activar modo administrador"></div>
+
+  <!-- Modales reutilizables -->
+  <div id="password-modal" class="modal" data-scale>
+    <div class="box">
+      <h3 class="title">Acceso administrador</h3>
+      <p class="txt">Ingresa la contraseña</p>
+      <input id="admin-password" type="password" class="input" placeholder="Contraseña">
+      <div id="password-error" class="error">Contraseña incorrecta</div>
+      <div class="flex gap-2 mt-6">
+        <button id="cancel-password-btn" class="btn-sec flex-1">Cancelar</button>
+        <button id="submit-password-btn" class="btn flex-1">Acceder</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal detalles evento -->
+  <div id="event-details-modal" class="modal" data-scale>
+    <div class="box overflow-hidden max-w-sm">
+      <header class="hdr">
+        <h3 id="event-details-title" class="title"></h3>
+      </header>
+      <main class="p-4 space-y-3">
+        <div><span class="lbl">Fecha:</span> <span id="event-details-date"></span></div>
+        <div><span class="lbl">Hora:</span> <span id="event-details-time"></span></div>
+      </main>
+      <footer class="ftr">
+        <button id="close-event-details-btn" class="btn-sec">Cerrar</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Grid principal -->
+  <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Calendario -->
+    <section class="calendar-container rounded-xl lg:col-span-2">
+      <header class="bg-grad p-6 text-[var(--bg)] flex justify-between items-center">
+        <button id="prev-month" aria-label="Mes anterior" class="nav-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <h1 id="month-year" class="text-3xl font-bold"></h1>
+        <button id="next-month" aria-label="Mes siguiente" class="nav-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </header>
+
+      <div class="p-6 bg-white">
+        <div class="grid grid-cols-7 gap-2 mb-2 text-center font-medium text-gray-600">
+          <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
+        </div>
+        <div id="calendar-days" class="grid grid-cols-7 gap-2"></div>
+      </div>
+    </section>
+
+    <!-- Panel de eventos -->
+    <aside class="bg-white rounded-xl shadow-lg">
+      <header class="hdr">
+        <h2 id="events-panel-title" class="text-xl font-bold">Próximos eventos</h2>
+      </header>
+      <div class="p-4">
+        <!-- Controles admin -->
+        <div id="admin-controls" class="hidden space-y-3 mb-4">
+          <button id="add-event-btn" class="btn w-full flex justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"/></svg>
+            Añadir evento
+          </button>
+
+          <div class="file-input-wrapper">
+            <button id="import-csv-btn" class="btn-alt w-full flex justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"/></svg>
+              Importar CSV
+            </button>
+            <input id="csv-file-input" type="file" accept=".csv">
+          </div>
+
+          <div id="csv-info" class="csv-info">Formato: <code>Nombre,YYYY-MM-DD,HH:MM</code></div>
+          <div id="import-result" class="import-result"></div>
+        </div>
+
+        <!-- Lista de eventos -->
+        <div id="events-list" class="events-grid"></div>
+      </div>
+    </aside>
+  </div>
+</body>
+</html>
